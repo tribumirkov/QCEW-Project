@@ -1,4 +1,6 @@
 matplotlib
+nbformat
 pandas
+plotly
 pydantic
 squarify

@@ -1,49 +1,31 @@
-import numpy as np
+from helpers import get_variables, get_children_codes, adjust_aggregation_code
 
-from helpers import get_children_codes
+from config import settings
 
 
-class Tree():
+def fetch(tree, key, value):
     """
-    Define tree class
-    """
-    def __init__(self, ind, estabs, empl, children):
-        """
-        Initialize class
-        """
-        self.ind = ind
-        self.estabs = estabs
-        self.empl = empl
-        self.children = children
-
-
-    def find_object(self, key, value):
-        """
-        Find key - value pair
-        """        
-        if getattr(self, key) == value:
-            return self
-        else:
-            for child in self.children:
-                match = child.find_object(key, value)
-                if match is not None:
-                    return match
+    Find key - value pair in the tree
+    """        
+    if tree.get(key) == value:
+        return tree
+    else:
+        for child in tree['children']:
+            match = fetch(child, key, value)
+            if match is not None:
+                return match
 
 
 def build_tree(df, code, aggregation):
     """
     Return the complete tree with nodes and leaves
     """
-    if aggregation <= 78:
-        if code is None:
-            codes = np.unique(sorted(list(df['industry_code'][df['agglvl_code']==aggregation])))
-            if codes is not None:
-                for code in codes:
-                    print(code)
-                    build_tree(df, code, aggregation+1)
-        else:
-            print(code)
-            children_codes = get_children_codes(df, code, aggregation)
+    if code is not None:
+        aggregation = adjust_aggregation_code(aggregation)
+        est, emp = get_variables(df, code, aggregation)
+        children_codes = get_children_codes(df, code, aggregation)
+        children = []
+        if aggregation <= settings.lowest_aggregation:
             for child_code in children_codes:
-                build_tree(df, child_code, aggregation+1)
-    return None
+                children.append(build_tree(df, child_code, aggregation+1))
+        return {'ind': code, 'est': est, 'emp': emp, 'children':children}
