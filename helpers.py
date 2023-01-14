@@ -22,7 +22,7 @@ def fetch_industry_data(year, quarter, industry):
 
 def adjust_aggregation_code(aggregation):
     """
-    Return aggregation code that skips 71, 72, and 73
+    Return aggregation code that skips 72, and 73
     """
     aggregation_levels = list(
         range(
@@ -41,10 +41,14 @@ def get_variables(df, code, aggregation):
     """
     Return variables of interest given industry code
     """
-    where = (df['industry_code']==code) & (df['agglvl_code']==aggregation)
-    est = np.sum(df[where][f'{settings.establishments}'])
-    emp = np.sum(df[where][f'{settings.employment}'].values)
-    return est, emp
+    ownership_code = settings.ownership_code
+    where = (df['industry_code']==code) & \
+            (df['agglvl_code']==aggregation) & \
+            (df['own_code']==ownership_code)
+    est = df[where][f'{settings.establishments}'].values[0]
+    emp = df[where][f'{settings.employment}'].values[0]
+    wages = df[where][f'{settings.wages}'].values[0]
+    return est, emp, wages
 
 
 def get_children_codes(df, code, aggregation):
@@ -56,7 +60,11 @@ def get_children_codes(df, code, aggregation):
     else:
         search_it = code
     if search_it == '10':
-        where = (df['agglvl_code']==settings.highest_aggregation)
+        where = (df['agglvl_code']==settings.highest_aggregation) & \
+                (df['own_code']==settings.ownership_code)
     else:
-        where = (df['industry_code'].str.startswith(search_it)) & (df['agglvl_code']==aggregation+1)
+        where = (df['industry_code'].str.startswith(search_it)) & \
+                (df['own_code']==settings.ownership_code) & \
+                (df['agglvl_code']==aggregation+1)
     return sorted(np.unique(df['industry_code'][where].values))
+
