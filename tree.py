@@ -5,7 +5,7 @@ from helpers import get_variables, get_children_codes, adjust_aggregation_code
 from config import settings
 
 
-def fetch(tree, key, value):
+def fetch_branch(tree, key, value):
     """
     Find key - value pair in the tree
     """        
@@ -13,9 +13,21 @@ def fetch(tree, key, value):
         return tree
     else:
         for child in tree['children']:
-            match = fetch(child, key, value)
+            match = fetch_branch(child, key, value)
             if match is not None:
                 return match
+
+
+def fetch_values_given_key(tree, key, values):
+    """
+    Return all the values in the tree given a key e.g. 'ind'
+    """
+    if tree.get(key) is not None:
+        values.append(tree[key])
+    if len(tree['children']) > 0:
+        for child in tree['children']:
+            values = fetch_values_given_key(child, key, values)
+    return values
 
 
 def write_into(tree, key, value, data):
