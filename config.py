@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     root_aggregation = 71
     highest_aggregation = 74
     lowest_aggregation = 78
+    max_digits_of_naics = 6
 
     establishments = 'qtrly_estabs'
     employment = 'month3_emplvl'
