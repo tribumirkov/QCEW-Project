@@ -1,9 +1,10 @@
-CMake
-cvxpy
-nbformat
-osqp==0.6.1
+wheel
+numpy
+matplotlib
 pandas
 plotly
 pydantic
-scipy
 squarify
+CMake
+osqp==0.6.1
+cvxpy
