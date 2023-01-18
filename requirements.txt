@@ -1,6 +1,7 @@
 wheel
 numpy
 matplotlib
+nbformat
 pandas
 plotly
 pydantic
