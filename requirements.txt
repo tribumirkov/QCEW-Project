@@ -1,6 +1,9 @@
-matplotlib
+CMake
+cvxpy
 nbformat
+osqp==0.6.1
 pandas
 plotly
 pydantic
+scipy
 squarify

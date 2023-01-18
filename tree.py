@@ -72,3 +72,27 @@ def get_subindustries_data(industry):
         'emp': emp,
         'wages': wages,
     }
+
+
+def get_constraints(tree, constraints):
+    """
+    Return all the constraints in a tree
+    """
+    if len(tree['children'])>0:
+        if tree['emp'] == 0:
+            constraint = f"{tree['est']}*epe_{tree['ind']} = "
+        else:
+            constraint = f"{tree['emp']} = "
+        for i,child in enumerate(tree['children']):
+            if i > 0:
+                constraint += ' + '
+            if child['emp'] == 0:
+                constraint+= f"{child['est']}*epe_{child['ind']} "
+            else:
+                constraint+= f"{child['emp']}"
+        check = constraint.split(' = ')
+        if check[0] != check[1]:
+            constraints.append(constraint)
+    for child in tree['children']:
+        constraints = get_constraints(child, constraints)
+    return constraints
