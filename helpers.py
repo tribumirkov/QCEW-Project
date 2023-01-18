@@ -68,3 +68,25 @@ def get_children_codes(df, code, aggregation):
                 (df['agglvl_code']==aggregation+1)
     return sorted(np.unique(df['industry_code'][where].values))
 
+
+def get_undisclosed_data(industry, data):
+    """
+    Return the sum of undisclosed variables depending on whether parent variable is disclosed
+    """
+    undisclosed_est = data['est'][np.where(data['emp']==0)]
+    undisclosed_ind = data['subind'][np.where(data['emp']==0)].tolist()
+    if industry['est'] > 0 and industry['emp'] == 0:
+        undisclosed_emp = industry['emp_ps'] - np.sum(data['emp'])
+        undisclosed_wages = industry['wages_ps'] - np.sum(data['wages'])
+    else:
+        undisclosed_emp = industry['emp'] - np.sum(data['emp'])
+        undisclosed_wages = industry['wages'] - np.sum(data['wages'])
+    return {
+        'est': undisclosed_est,
+        'ind': undisclosed_ind,
+        'emp': undisclosed_emp,
+        'wages': undisclosed_wages
+    }
+
+        
+
