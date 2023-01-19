@@ -15,5 +15,7 @@ class Settings(BaseSettings):
     employment = 'month3_emplvl'
     wages = 'total_qtrly_wages'
 
+    employment_abbreviation = 'emp'
+    wages_abbreviation = 'wages'
 
 settings = Settings()
