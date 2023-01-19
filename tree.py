@@ -80,14 +80,14 @@ def get_constraints(tree, key, constraints):
     """
     if len(tree['children'])>0:
         if tree[key] == 0:
-            constraint = f"{tree['est']}*epe_{tree['ind']} = "
+            constraint = f"{tree['est']}*{key[0]}pe_{tree['ind']} = "
         else:
             constraint = f"{tree[key]} = "
         for i,child in enumerate(tree['children']):
             if i > 0:
                 constraint += ' + '
             if child[key] == 0:
-                constraint+= f"{child['est']}*epe_{child['ind']} "
+                constraint+= f"{child['est']}*{key[0]}pe_{child['ind']} "
             else:
                 constraint+= f"{child[key]}"
         check = constraint.split(' = ')

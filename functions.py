@@ -1,8 +1,7 @@
 import cvxpy as cp
 import numpy as np
-import re
 
-from helpers import get_undisclosed_data
+from helpers import get_undisclosed_data, get_lp_variables
 from tree import write_into, get_constraints, fetch_branch
 from config import settings
 
@@ -28,12 +27,9 @@ def run_linear_programming(county, key):
     Return the given tree with linear programming results in it
     """
     constraints = get_constraints(county, key, [])
-    variables = []
-    for constraint in constraints:
-        variables+=re.findall(r"epe_[^ ]* ", constraint)
+    variables = get_lp_variables(constraints, key)
     for variable in variables:
-        exec(f"{variable} = cp.Variable()")
-    objective = None
+        exec(f"{variable} = cp.Variable()", globals())
     exec(f"objective = cp.Minimize(cp.abs({constraints[0].replace('=', '-').replace('+', '-')}))")
     numerical_constraints = []
     for i,constraint in enumerate(constraints):
@@ -41,7 +37,7 @@ def run_linear_programming(county, key):
             numerical_constraints.append(eval(f"{constraint.replace('=','==')}"))
     for variable in variables:
         numerical_constraints.append(eval(f"{variable}>= 0"))
-    problem = cp.Problem(objective, numerical_constraints)
+    problem = cp.Problem(locals()['objective'], numerical_constraints)
     problem.solve()
     for variable in variables:
         ind = variable[variable.find('_')+1:-1]
@@ -49,7 +45,7 @@ def run_linear_programming(county, key):
         if branch[key] == 0:
             write_into(
                 county, 'ind', branch['ind'],
-                {'emp_lp': branch['est'] * eval(f"float({variable}.value)")}
+                {f'{key}_lp': branch['est'] * eval(f"float({variable}.value)")}
             )
     return county
 

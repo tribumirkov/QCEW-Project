@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import re
 
 from config import settings
 
@@ -9,7 +10,9 @@ def fetch_area_data(year, quarter, area):
     Return a pandas table from BLS given year, quarter (a for year), and area code
     """
     urlPath = f'{settings.qcew_api_url}/{year}/{quarter}/area/{area}.csv'
-    return pd.read_csv(urlPath), urlPath
+    df = pd.read_csv(urlPath)
+    df['industry_code'] = df['industry_code'].str.replace('-','_')
+    return df, urlPath
 
 
 def fetch_industry_data(year, quarter, industry):
@@ -89,4 +92,22 @@ def get_undisclosed_data(industry, data):
     }
 
         
-
+def get_lp_variables(constraints, key):
+    """
+    Return a list of variables from constraints
+    """
+    variables = []
+    if key == settings.employment_abbreviation:
+        regex = r"epe_[^ ]* "
+    elif key == settings.wages_abbreviation:
+        regex = r"wpe_[^ ]* "
+    else:
+        raise Exception(
+            f'''
+            Unknown variable abbreviation: 
+            it can be either {settings.employment_abbreviation} or {settings.wages_abbreviation}
+            '''
+        )
+    for constraint in constraints:
+        variables+=re.findall(regex, constraint)
+    return list(np.unique(variables))
