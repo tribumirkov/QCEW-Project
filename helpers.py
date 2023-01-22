@@ -111,3 +111,4 @@ def get_lp_variables(constraints, key):
     for constraint in constraints:
         variables+=re.findall(regex, constraint)
     return list(np.unique(variables))
+
