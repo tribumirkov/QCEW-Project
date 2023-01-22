@@ -11,7 +11,10 @@ def fetch_area_data(year, quarter, area):
     """
     urlPath = f'{settings.qcew_api_url}/{year}/{quarter}/area/{area}.csv'
     df = pd.read_csv(urlPath)
-    df['industry_code'] = df['industry_code'].str.replace('-','_')
+    df['industry_code'] = df['industry_code'].str.replace(
+        '-',
+        settings.string_connecting_codes
+    )
     return df, urlPath
 
 
@@ -58,7 +61,7 @@ def get_children_codes(df, code, aggregation):
     """
     Return a list of children codes
     """
-    if '-' in code:
+    if settings.string_connecting_codes in code:
         search_it = tuple([str(number) for number in range(int(code[0:2]), int(code[-2:]) + 1)])
     else:
         search_it = code

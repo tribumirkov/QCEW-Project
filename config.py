@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     lowest_aggregation = 78
     max_digits_of_naics = 6
 
+    string_connecting_codes = '_'
+
     establishments = 'qtrly_estabs'
     employment = 'month3_emplvl'
     wages = 'total_qtrly_wages'

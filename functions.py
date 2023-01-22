@@ -38,7 +38,7 @@ def run_linear_programming(county, key):
     for variable in variables:
         numerical_constraints.append(eval(f"{variable}>= 0"))
     problem = cp.Problem(locals()['objective'], numerical_constraints)
-    problem.solve()
+    problem.solve(solver=cp.ECOS)
     for variable in variables:
         ind = variable[variable.find('_')+1:-1]
         branch = fetch_branch(county, 'ind', ind)
