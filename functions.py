@@ -49,3 +49,14 @@ def run_linear_programming(county, key):
             )
     return county
 
+
+def save_data_to_time_series(time_series, county, industry_codes, key, year):
+    for ind in industry_codes:
+            industry = fetch_branch(county, 'ind', ind)
+            if industry is not None:
+                if industry.get(f'{key}_lp') is not None:
+                    time_series.at[year, ind] = industry[f'{key}_lp']
+                else:
+                    time_series.at[year, ind] = industry[f'{key}']
+    return time_series
+
