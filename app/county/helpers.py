@@ -9,21 +9,21 @@ def fetch_area_data(year, quarter, area):
     """
     Return a pandas table from BLS given year, quarter (a for year), and area code
     """
-    urlPath = f'{settings.qcew_api_url}/{year}/{quarter}/area/{area}.csv'
-    df = pd.read_csv(urlPath)
+    url_path = f'{settings.qcew_api_url}/{year}/{quarter}/area/{area}.csv'
+    df = pd.read_csv(url_path)
     df['industry_code'] = df['industry_code'].str.replace(
         '-',
         settings.string_connecting_codes
     )
-    return df, urlPath
+    return df, url_path
 
 
 def fetch_industry_data(year, quarter, industry):
     """
     Return a pandas table from BLS given year, quarter (a for year), and NAICS code
     """
-    urlPath = f'{settings.qcew_api_url}/{year}/{quarter}/industry/{industry}.csv'
-    return pd.read_csv(urlPath)
+    url_path = f'{settings.qcew_api_url}/{year}/{quarter}/industry/{industry}.csv'
+    return pd.read_csv(url_path)
 
 
 def adjust_aggregation_code(aggregation):
@@ -41,7 +41,7 @@ def adjust_aggregation_code(aggregation):
     if settings.root_aggregation < aggregation < settings.highest_aggregation:
         return settings.highest_aggregation
     raise Exception('Aggregation level code unknown.')
-    
+
 
 def get_variables(df, code, aggregation):
     """
@@ -94,7 +94,7 @@ def get_undisclosed_data(industry, data):
         'wages': undisclosed_wages
     }
 
-        
+
 def get_lp_variables(constraints, key):
     """
     Return a list of variables from constraints
@@ -107,7 +107,7 @@ def get_lp_variables(constraints, key):
     else:
         raise Exception(
             f'''
-            Unknown variable abbreviation: 
+            Unknown variable abbreviation:
             it can be either {settings.employment_abbreviation} or {settings.wages_abbreviation}
             '''
         )
@@ -115,3 +115,23 @@ def get_lp_variables(constraints, key):
         variables+=re.findall(regex, constraint)
     return list(np.unique(variables))
 
+
+def get_lp_variables_free(constraints, key):
+    """
+    Return a list of variables from constraints
+    """
+    variables = []
+    if key == settings.employment_abbreviation:
+        regex = r"emp_[^ ]* "
+    elif key == settings.wages_abbreviation:
+        regex = r"wages_[^ ]* "
+    else:
+        raise Exception(
+            f'''
+            Unknown variable abbreviation:
+            it can be either {settings.employment_abbreviation} or {settings.wages_abbreviation}
+            '''
+        )
+    for constraint in constraints:
+        variables+=re.findall(regex, constraint)
+    return list(np.unique(variables))

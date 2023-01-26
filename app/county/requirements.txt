@@ -5,6 +5,7 @@ nbformat
 pandas
 plotly
 pydantic
+scikit-learn
 squarify
 CMake
 osqp==0.6.1

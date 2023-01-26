@@ -1,3 +1,6 @@
+"""
+Tree methods for county level optimization
+"""
 import numpy as np
 
 from helpers import get_variables, get_children_codes, adjust_aggregation_code
@@ -8,14 +11,13 @@ from config import settings
 def fetch_branch(tree, key, value):
     """
     Find key - value pair in the tree
-    """        
+    """
     if tree.get(key) == value:
         return tree
-    else:
-        for child in tree['children']:
-            match = fetch_branch(child, key, value)
-            if match is not None:
-                return match
+    for child in tree['children']:
+        match = fetch_branch(child, key, value)
+        if match is not None:
+            return match
 
 
 def fetch_values_given_key(tree, key, values):
@@ -74,6 +76,20 @@ def get_subindustries_data(industry):
     }
 
 
+def get_objective(tree, key, objective):
+    """
+    Return the objective function as key_10 - sum (key_6digits)
+    """
+    if len(tree['children'])==0:
+        if tree[key] == 0:
+            objective += f" - {tree['est']}*{key[0]}pe_{tree['ind']}"
+        else:
+            objective += f" - {tree[key]}"
+    for child in tree['children']:
+        objective = get_objective(child, key, objective)
+    return objective
+
+
 def get_constraints(tree, key, constraints):
     """
     Return all the constraints in a tree
@@ -95,4 +111,28 @@ def get_constraints(tree, key, constraints):
             constraints.append(constraint)
     for child in tree['children']:
         constraints = get_constraints(child, key, constraints)
+    return constraints
+
+
+def get_constraints_free(tree, key, constraints):
+    """
+    Return all the constraints in a tree allowing free parameters
+    """
+    if len(tree['children'])>0:
+        if tree[key] == 0:
+            constraint = f"{key}_{tree['ind']} = "
+        else:
+            constraint = f"{tree[key]} = "
+        for i,child in enumerate(tree['children']):
+            if i > 0:
+                constraint += ' + '
+            if child[key] == 0:
+                constraint+= f"{key}_{child['ind']} "
+            else:
+                constraint+= f"{child[key]}"
+        check = constraint.split(' = ')
+        if check[0] != check[1]:
+            constraints.append(constraint)
+    for child in tree['children']:
+        constraints = get_constraints_free(child, key, constraints)
     return constraints
