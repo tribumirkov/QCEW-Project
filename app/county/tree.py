@@ -2,9 +2,9 @@
 Tree methods for county level optimization
 """
 import numpy as np
+import numexpr as ne
 
 from helpers import get_variables, get_children_codes, adjust_aggregation_code
-
 from config import settings
 
 
@@ -109,6 +109,9 @@ def get_constraints(tree, key, constraints):
         check = constraint.split(' = ')
         if check[0] != check[1]:
             constraints.append(constraint)
+        if 'epe' not in constraint:
+            if not bool(ne.evaluate(constraint.replace(' = ', ' == '))):
+                constraints.append(constraint)
     for child in tree['children']:
         constraints = get_constraints(child, key, constraints)
     return constraints
