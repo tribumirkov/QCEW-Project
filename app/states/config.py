@@ -20,9 +20,9 @@ class Settings(BaseSettings):
 
     string_connecting_codes = '_'
 
-    establishments = 'qtrly_estabs'
-    employment = 'month3_emplvl'
-    wages = 'total_qtrly_wages'
+    establishments = 'annual_avg_estabs' #'qtrly_estabs'
+    employment = 'annual_avg_emplvl' #'month3_emplvl'
+    wages = 'total_annual_wages' #'total_qtrly_wages'
 
     employment_abbreviation = 'emp'
     wages_abbreviation = 'wages'
