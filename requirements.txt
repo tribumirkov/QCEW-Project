@@ -2,6 +2,7 @@ wheel
 numpy
 matplotlib
 nbformat
+notebook
 numexpr
 pandas
 plotly
